@@ -10,7 +10,7 @@ export default function App(): JSX.Element {
         <Route exact path="/">
           <Login />
         </Route>
-        <Route exact path="/room">
+        <Route exact path="/room/:id">
           <Room />
         </Route>
       </Switch>

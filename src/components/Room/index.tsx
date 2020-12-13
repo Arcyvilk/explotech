@@ -1,4 +1,5 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -12,5 +13,6 @@ const Wrapper = styled.div`
 `;
 
 export default function Room(): JSX.Element {
-  return <Wrapper>ROOM DUPA</Wrapper>;
+  const { id } = useParams<{ id: string }>();
+  return <Wrapper>ROOM DUPA, ID: {id}</Wrapper>;
 }
