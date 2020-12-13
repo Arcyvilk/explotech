@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -33,6 +34,7 @@ const Title = styled.h4`
   user-select: none;
 `;
 const Button = styled.button`
+  width: 100%;
   height: 64px;
   background-color: #ff9999;
   color: red;
@@ -46,16 +48,23 @@ const Button = styled.button`
 `;
 
 export default function Login(): JSX.Element {
+  const [roomId, setRoomId] = useState('' as string);
   return (
     <Wrapper>
       <LoginModal>
         <Title>Your nickname</Title>
         <Input type="name" />
         <Title>Room ID</Title>
-        <Input type="room" />
+        <Input
+          type="room"
+          onChange={event => setRoomId(event.target.value)}
+          value={roomId}
+        />
         <Title>Room password (optional)</Title>
         <Input type="pass" />
-        <Button>Join!</Button>
+        <Link to={`/room/${roomId}`}>
+          <Button disabled={!roomId || roomId.length === 0}>Join!</Button>
+        </Link>
       </LoginModal>
     </Wrapper>
   );
