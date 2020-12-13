@@ -11,8 +11,6 @@ const Wrapper = styled.div`
   color: white;
 `;
 
-export default function Room() {
-  return (
-    <Wrapper>ROOM DUPA</Wrapper>
-  )
+export default function Room(): JSX.Element {
+  return <Wrapper>ROOM DUPA</Wrapper>;
 }

@@ -11,8 +11,6 @@ const Wrapper = styled.div`
   color: white;
 `;
 
-export default function Login() {
-  return (
-    <Wrapper>LOGIN DUPA</Wrapper>
-  )
+export default function Login(): JSX.Element {
+  return <Wrapper>LOGIN DUPA</Wrapper>;
 }
