@@ -33,6 +33,7 @@ export default function Room(props: RoomProps): JSX.Element {
   const HBinterval = 5000;
 
   const init = () => {
+    console.log('yay!');
     openWs();
   };
 
@@ -47,10 +48,12 @@ export default function Room(props: RoomProps): JSX.Element {
   const wsUrl = 'ws://localhost:2021';
   const openWs = () => {
     if (!user) {
+      console.log('no user');
       return;
     }
     setWs(new WebSocket(wsUrl));
     if (!ws) {
+      console.log('no websocket');
       return;
     }
     ws.onopen = () => {
