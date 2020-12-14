@@ -1,4 +1,4 @@
-import WebSocket from 'ws';
+import { Server } from 'ws';
 
 class WS {
   constructor(server) {
@@ -84,16 +84,18 @@ class WS {
         }
       });
 
-      client.on('close', (code, reason) => {});
+      client.on('close', (/*code, reason*/) => {
+        console.log('closed');
+      });
 
       setInterval(this.monitorHBs, this.HB.interval);
     });
   }
 
   openWebsocket() {
-    this.ws = new WebSocket.Server({ server: this.server });
+    this.ws = new Server({ server: this.server });
     this.connectToWebsocket();
   }
 }
 
-module.exports = WS;
+export default WS;

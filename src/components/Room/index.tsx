@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import config from '../../../config.json';
+// import config from '../../../config.json';
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -32,12 +32,19 @@ export default function Room(props: RoomProps): JSX.Element {
   const [participants, setParticipants] = useState([] as Participant[]);
   const HBinterval = 5000;
 
+  const init = () => {
+    openWs();
+  };
+
+  useEffect(() => init(), []);
+
   // WEBSOCKETS
   const sendStringified = (message: WsMessage) =>
     ws?.send(JSON.stringify(message));
-  const wsUrl = `ws://${config.HOST ? config.HOST : 'localhost'}:${
-    config.PORT
-  }`;
+  // const wsUrl = `ws://${config.HOST ? config.HOST : 'localhost'}:${
+  //   config.PORT
+  // }`;
+  const wsUrl = 'ws://localhost:2021';
   const openWs = () => {
     if (!user) {
       return;
