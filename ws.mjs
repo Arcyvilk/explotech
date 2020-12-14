@@ -1,4 +1,4 @@
-import { Server } from 'ws';
+import WebSocket from 'ws';
 
 class WS {
   constructor(server) {
@@ -93,7 +93,7 @@ class WS {
   }
 
   openWebsocket() {
-    this.ws = new Server({ server: this.server });
+    this.ws = new WebSocket.Server({ server: this.server });
     this.connectToWebsocket();
   }
 }
