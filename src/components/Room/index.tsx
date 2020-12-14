@@ -1,29 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
+import { Wrapper } from './style';
+import { WsMessage, Participant, RoomProps } from './types';
 // import config from '../../../config.json';
-
-const Wrapper = styled.div`
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: black;
-  color: white;
-`;
-
-type WsMessage = {
-  type: string;
-  [key: string]: any;
-};
-type Participant = {
-  user: string;
-  active: boolean;
-};
-type RoomProps = {
-  user?: string;
-};
 
 export default function Room(props: RoomProps): JSX.Element {
   const { user } = props;
