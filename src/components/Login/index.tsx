@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Wrapper, LoginModal, Title, Input, Hover, Button } from './style';
-import { userLogin } from '../../shared/store/reducers/users';
+import { logIntoRoom } from '../../shared/store/reducers';
 
 export default function Login(): JSX.Element {
   const dispatch = useDispatch();
@@ -23,7 +23,7 @@ export default function Login(): JSX.Element {
 
   const onProceed = () => {
     if (canProceed) {
-      dispatch(userLogin(nickname));
+      dispatch(logIntoRoom({ roomId, nickname }));
     }
   };
 

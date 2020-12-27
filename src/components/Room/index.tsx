@@ -1,112 +1,33 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { Wrapper } from './style';
-import { WsMessage, Participant, RoomProps } from './types';
+import { RootState } from '../../shared/store';
+import WS from '../../shared/ws';
+import NotFound from '../NotFound';
 // import config from '../../../config.json';
 
-export default function Room(props: RoomProps): JSX.Element {
-  const { user } = props;
+export default function Room(): JSX.Element {
   const { roomId } = useParams<{ roomId: string }>();
-  const [ws, setWs] = useState(undefined as WebSocket | undefined);
-  const [participants, setParticipants] = useState([] as Participant[]);
-  const HBinterval = 5000;
-
-  const init = () => {
-    console.log('yay!');
-    openWs();
-  };
+  const [ws, setWs] = useState(undefined as any);
+  const room = useSelector((state: RootState) =>
+    state.rooms.active.find(room => room.roomId === roomId),
+  );
 
   useEffect(() => init(), []);
 
-  // WEBSOCKETS
-  const sendStringified = (message: WsMessage) =>
-    ws?.send(JSON.stringify(message));
-  // const wsUrl = `ws://${config.HOST ? config.HOST : 'localhost'}:${
-  //   config.PORT
-  // }`;
-  const wsUrl = 'ws://localhost:2021';
-  const openWs = () => {
-    if (!user) {
-      console.log('no user');
-      return;
-    }
-    setWs(new WebSocket(wsUrl));
-    if (!ws) {
-      console.log('no websocket');
-      return;
-    }
-    ws.onopen = () => {
-      const data = {
-        type: 'joined',
-        user,
-      };
-      sendStringified(data);
-    };
-    // @ts-ignore
-    ws.onclose = () => console.log(`Websocket disconnected - ${wsUrl}`);
-    ws.onmessage = (event: MessageEvent<string>) => {
-      const message = JSON.parse(event.data);
-      receiveMessage(message);
-    };
-    setInterval(sendHB, HBinterval);
-    console.log(`Websocket connected - ${wsUrl}`);
-  };
-  const receiveMessage = (message: WsMessage) => {
-    switch (message.type) {
-      case 'firework':
-        return fire(message);
-      case 'update': {
-        setParticipants(
-          message.participants.map((participant: Participant) => ({
-            user: participant,
-            active: false,
-          })),
-        );
-        return;
-      }
-      default:
-        return;
-    }
-  };
-  const sendHB = (): void => {
-    const data = {
-      type: 'HB',
-      user,
-    };
-    sendStringified(data);
+  const init = () => {
+    const websocket = new WS();
+    websocket.openWs();
+    setWs(websocket);
   };
 
-  // FIREWORKS
-  const sendFireEvent = () => {
-    const firework = {
-      type: 'firework',
-      user,
-    };
-    sendStringified(firework);
-  };
-  const fire = async (message: WsMessage) => {
-    // fireworks.fire();
-    activateUser(message.user, true);
-    await sleep(200);
-    activateUser(message.user, false);
-  };
-  const activateUser = (user: string, active: boolean) => {
-    setParticipants([
-      ...participants.map((participant: Participant) => {
-        if (participant.user === user) {
-          participant.active = active;
-        }
-        return participant;
-      }),
-    ]);
-  };
+  const onFireEvent = () => ws.sendFireEvent();
 
-  // OTHER
-  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-  return (
-    <Wrapper onClick={sendFireEvent}>
-      {/* <Users>
+  if (room) {
+    return (
+      <Wrapper onClick={onFireEvent}>
+        {/* <Users>
       {this.state.participants.map(participant => (
         <Users.Nick active={participant.active}>
           <span role="img" aria-label="emoji">
@@ -116,7 +37,10 @@ export default function Room(props: RoomProps): JSX.Element {
         </Users.Nick>
       ))}
     </Users> */}
-      ROOM DUPA, ID: {roomId}
-    </Wrapper>
-  );
+        ROOM DUPA, ID: {roomId}
+      </Wrapper>
+    );
+  } else {
+    return <NotFound />;
+  }
 }
