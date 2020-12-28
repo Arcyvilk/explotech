@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const Info = styled.div`
+const Modal = styled.div`
   display: flex;
   flex-direction: column;
   border-radius: 4px;
@@ -10,5 +10,6 @@ export const Info = styled.div`
   padding: 20px;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 14px;
-  user-select: none;
 `;
+
+export default Modal;
