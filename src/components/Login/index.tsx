@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { Title, Input, Hover, Modal, Button } from '../shared';
 import { logIntoRoom } from '../../shared/store/reducers';
+import { RootState } from '../../shared/store';
 
 export default function Login(): JSX.Element {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [roomId, setRoomId] = useState('' as string);
   const [nickname, setNickname] = useState('' as string);
   const [password, setPassword] = useState('' as string);
   const [canProceed, setCanProceed] = useState(false as boolean);
+
+  const loginStatus = useSelector(
+    (state: RootState) => state.rooms.loginStatus.status,
+  );
 
   useEffect(() => {
     const hasRoomId = roomId && roomId?.length !== 0;
@@ -20,6 +26,12 @@ export default function Login(): JSX.Element {
       setCanProceed(true);
     }
   }, [roomId, nickname]);
+
+  useEffect(() => {
+    if (loginStatus === 'fulfilled') {
+      history.push(`/room/${roomId}`);
+    }
+  }, [loginStatus]);
 
   const onProceed = () => {
     if (canProceed) {
@@ -63,9 +75,7 @@ export default function Login(): JSX.Element {
         placeholder="Password"
       />
       {canProceed ? (
-        <Link to={`/room/${roomId}`} onClick={onProceed}>
-          <Button>Join!</Button>
-        </Link>
+        <Button onClick={onProceed}>Join!</Button>
       ) : (
         <Button disabled>Join!</Button>
       )}

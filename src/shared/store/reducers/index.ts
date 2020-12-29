@@ -12,6 +12,10 @@ export type Room = {
 };
 export type RoomState = {
   active: Room[];
+  loginStatus: {
+    roomId?: string;
+    status: 'pending' | 'rejected' | 'fulfilled' | 'inactive';
+  };
 };
 
 const path = 'http://localhost:2021/api';
@@ -21,20 +25,30 @@ const path = 'http://localhost:2021/api';
 // -------------------------------------
 export const logIntoRoom = createAsyncThunk(
   'rooms/logIntoRoom',
-  async ({ roomId, nickname }: { roomId: string; nickname: string }) => {
+  async (
+    { roomId, nickname }: { roomId: string; nickname: string },
+    { rejectWithValue },
+  ) => {
+    // @ts-ignore
     const data = {
       roomId,
       nickname,
     };
     try {
-      const test = await fetch(`${path}/login`, {
+      const response = await fetch(`${path}/login`, {
         method: 'POST',
         body: JSON.stringify(data),
       });
-      console.log(test);
-      return test;
+      if (response.status === 204) {
+        return {
+          roomId,
+          nickname,
+        };
+      } else {
+        throw response.status;
+      }
     } catch (error) {
-      return error.response.data;
+      rejectWithValue(error.response.data);
     }
   },
 );
@@ -46,26 +60,44 @@ const roomSlice = createSlice({
   name: 'rooms',
   initialState: {
     active: [],
+    loginStatus: {
+      roomId: undefined,
+      status: 'inactive',
+    },
   } as RoomState,
   reducers: {},
   extraReducers: builder => {
-    builder.addCase(logIntoRoom.pending, () => {
-      console.log('pending');
+    builder.addCase(logIntoRoom.pending, state => {
+      state.loginStatus = {
+        // @ts-ignore
+        status: 'pending',
+      };
     });
-    builder.addCase(logIntoRoom.rejected, () => {
-      console.log('rejected');
+    builder.addCase(logIntoRoom.rejected, (state, action) => {
+      console.log(action);
+      state.loginStatus = {
+        // @ts-ignore
+        // roomId: payload?.roomId,
+        roomId: 'dupa',
+        status: 'rejected',
+      };
     });
     builder.addCase(logIntoRoom.fulfilled, (state, { payload }) => {
-      console.log('dupa');
+      // @ts-ignore
+      const { roomId, nickname } = payload;
       const room = {
-        roomId: payload.roomId,
-        nickname: payload.nickname,
+        roomId,
+        nickname,
         color: '#ff0000',
       };
       const oldRooms = state.active.filter(
         (oldRoom: Room) => oldRoom.roomId !== room.roomId,
       );
       state.active = [...oldRooms, room];
+      state.loginStatus = {
+        roomId,
+        status: 'fulfilled',
+      };
     });
   },
 });
