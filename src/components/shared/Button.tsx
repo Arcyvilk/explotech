@@ -1,6 +1,12 @@
 import styled from 'styled-components';
 
-const Button = styled.button`
+const Button = styled.button.attrs(({ disabled }: { disabled?: boolean }) => {
+  return {
+    style: {
+      cursor: disabled ? 'not-allowed' : 'pointer',
+    },
+  };
+})<{ disabled?: boolean }>`
   width: 100%;
   height: 64px;
   background-color: #ff9999;

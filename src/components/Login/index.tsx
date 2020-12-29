@@ -67,7 +67,7 @@ export default function Login(): JSX.Element {
           <Button>Join!</Button>
         </Link>
       ) : (
-        <Button>Join!</Button>
+        <Button disabled>Join!</Button>
       )}
     </Modal>
   );
