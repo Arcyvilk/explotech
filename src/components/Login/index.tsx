@@ -35,7 +35,7 @@ export default function Login(): JSX.Element {
 
   const onProceed = () => {
     if (canProceed) {
-      dispatch(logIntoRoom({ roomId, nickname }));
+      dispatch(logIntoRoom({ roomId, nickname, password }));
     }
   };
 

@@ -26,20 +26,28 @@ const path = 'http://localhost:2021/api';
 export const logIntoRoom = createAsyncThunk(
   'rooms/logIntoRoom',
   async (
-    { roomId, nickname }: { roomId: string; nickname: string },
+    {
+      roomId,
+      nickname,
+      password,
+    }: { roomId: string; nickname: string; password?: string },
     { rejectWithValue },
   ) => {
     // @ts-ignore
     const data = {
       roomId,
       nickname,
+      password,
     };
     try {
       const response = await fetch(`${path}/login`, {
         method: 'POST',
         body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
-      if (response.status === 204) {
+      if (response.status === 201 || response.status === 204) {
         return {
           roomId,
           nickname,
