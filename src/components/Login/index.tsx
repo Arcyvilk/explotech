@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { NotificationManager } from 'react-notifications';
 import { Title, Input, Hover, Modal, Button } from '../shared';
 import { logIntoRoom } from '../../shared/store/reducers';
 import { RootState } from '../../shared/store';
@@ -29,7 +30,20 @@ export default function Login(): JSX.Element {
 
   useEffect(() => {
     if (loginStatus === 'fulfilled') {
+      NotificationManager.info(
+        `Successfully logged into the "${roomId}" room!`,
+        'Success!',
+        3000,
+      );
       history.push(`/room/${roomId}`);
+    }
+    if (loginStatus === 'rejected') {
+      history.push(`/room/${roomId}`);
+      NotificationManager.error(
+        'An error occured while trying to log in.',
+        'Close after 3000ms',
+        3000,
+      );
     }
   }, [loginStatus]);
 

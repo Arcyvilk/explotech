@@ -15,6 +15,7 @@ export type RoomState = {
   loginStatus: {
     roomId?: string;
     status: 'pending' | 'rejected' | 'fulfilled' | 'inactive';
+    code?: number;
   };
 };
 
@@ -25,20 +26,17 @@ const path = 'http://localhost:2021/api';
 // -------------------------------------
 export const logIntoRoom = createAsyncThunk(
   'rooms/logIntoRoom',
-  async (
-    {
-      roomId,
-      nickname,
-      password,
-    }: { roomId: string; nickname: string; password?: string },
-    { rejectWithValue },
-  ) => {
-    // @ts-ignore
-    const data = {
-      roomId,
-      nickname,
-      password,
-    };
+  async (data: {
+    roomId: string;
+    nickname: string;
+    password?: string;
+  }): Promise<{
+    roomId: string;
+    nickname: string;
+    status?: number;
+    error?: { status: number; response: { data: any } };
+  }> => {
+    const { roomId, nickname } = data;
     try {
       const response = await fetch(`${path}/login`, {
         method: 'POST',
@@ -51,12 +49,18 @@ export const logIntoRoom = createAsyncThunk(
         return {
           roomId,
           nickname,
+          status: response.status,
         };
       } else {
         throw response.status;
       }
     } catch (error) {
-      rejectWithValue(error.response.data);
+      return {
+        roomId,
+        nickname,
+        status: error.status,
+        error: error.response.data,
+      };
     }
   },
 );
@@ -81,13 +85,13 @@ const roomSlice = createSlice({
         status: 'pending',
       };
     });
-    builder.addCase(logIntoRoom.rejected, (state, action) => {
-      console.log(action);
+    builder.addCase(logIntoRoom.rejected, (state, { payload }) => {
       state.loginStatus = {
         // @ts-ignore
-        // roomId: payload?.roomId,
-        roomId: 'dupa',
+        roomId: payload.roomId,
         status: 'rejected',
+        // @ts-ignore
+        code: payload.status,
       };
     });
     builder.addCase(logIntoRoom.fulfilled, (state, { payload }) => {
@@ -105,6 +109,7 @@ const roomSlice = createSlice({
       state.loginStatus = {
         roomId,
         status: 'fulfilled',
+        code: payload.status,
       };
     });
   },
